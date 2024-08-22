@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import filedialog, messagebox
+from tkinter import filedialog
 from tkinter import ttk
 from googletrans import Translator
 import time
@@ -22,14 +22,15 @@ def read_translated_words(output_file):
             return set(line.split('=')[0] for line in lines)
     return set()
 
-def show_error_and_stop(error_message):
-    # Hata mesajını göster ve 3 saniye sonra kapat
-    messagebox.showerror("Hata", error_message)
-    root.after(3000, lambda: root.quit())  # Hata kutusunu 3 saniye sonra kapat
+def log_error_and_retry(error_message):
+    # Hata mesajını log dosyasına yaz
+    with open('error_log.txt', 'a', encoding='utf-8') as log_file:
+        log_file.write(f"{time.ctime()}: {error_message}\n")
 
-    # Çeviri işlemini durdur ve otomatik olarak durdur butonuna bas
-    root.after(3000, stop_translation_process)
-    root.after(4000, continue_translation_process)  # 1 saniye sonra devam ettir
+    # 3 saniye bekle ve devam et
+    time.sleep(3)
+    stop_translation_process()
+    continue_translation_process()
 
 def translate_file(input_file, output_file, target_language='tr'):
     translator = Translator()
@@ -46,27 +47,22 @@ def translate_file(input_file, output_file, target_language='tr'):
         with open(input_file, 'r', encoding='utf-8') as infile, open(output_file, 'a', encoding='utf-8') as outfile:
             for line in infile:
                 if stop_translation:
-                    messagebox.showinfo("Durduruldu", "Çeviri işlemi durduruldu.")
                     return
 
                 word = line.strip()
                 if word and word not in translated_words:
                     try:
-                        # Çeviri yap
                         translation = translator.translate(word, dest=target_language).text
                         outfile.write(f"{word.replace(' ', '_')}={translation.replace(' ', '_')}\n")
                     except Exception as e:
-                        # Hata olursa göster ve durdur
-                        show_error_and_stop(f"Bir hata oluştu: {e}")
+                        log_error_and_retry(f"Bir hata oluştu: {e}")
                         return
                 
-                # İlerleme çubuğunu ve sayaç değerini güncelle
                 current_line += 1
                 progress = (current_line / total_lines) * 100
                 progress_var.set(progress)
                 count_label.config(text=f"İşlenen Kelime Sayısı: {current_line} / {total_lines} (Geçmiş: {len(translated_words)})")
                 
-                # Tahmini kalan süreyi güncelle
                 elapsed_time = time.time() - start_time
                 avg_time_per_line = elapsed_time / current_line if current_line > 0 else 0
                 estimated_total_time = avg_time_per_line * total_lines
@@ -74,14 +70,15 @@ def translate_file(input_file, output_file, target_language='tr'):
                 time_label.config(text=f"Geçen Süre: {format_time(elapsed_time)} | Tahmini Kalan Süre: {format_time(remaining_time)}")
                 root.update_idletasks()
         
-        end_time = time.time()  # Bitiş zamanını kaydet
+        end_time = time.time()
         elapsed_time = end_time - start_time
         formatted_time = format_time(elapsed_time)
-        messagebox.showinfo("Başarılı", f"Çeviri tamamlandı! Süre: {formatted_time}")
+        # Başarılı mesajını bir loga veya dosyaya yazabiliriz
+        with open('translation_log.txt', 'a', encoding='utf-8') as log_file:
+            log_file.write(f"{time.ctime()}: Çeviri tamamlandı! Süre: {formatted_time}\n")
     
     except Exception as e:
-        # Hata durumunda göster ve durdur
-        show_error_and_stop(f"Bir hata oluştu: {e}")
+        log_error_and_retry(f"Bir hata oluştu: {e}")
 
 def run_translation():
     input_file = input_file_path.get()
@@ -90,21 +87,21 @@ def run_translation():
     if input_file and output_file:
         global stop_translation
         stop_translation = False
-        # Çeviri işlemini ayrı bir iş parçacığında çalıştır
         translation_thread = threading.Thread(target=translate_file, args=(input_file, output_file))
         translation_thread.start()
-        stop_button.config(state=tk.NORMAL)  # Durdurma butonunu etkinleştir
-        continue_button.config(state=tk.DISABLED)  # Devam Et butonunu devre dışı bırak
+        stop_button.config(state=tk.NORMAL)
+        continue_button.config(state=tk.DISABLED)
     else:
-        messagebox.showwarning("Eksik Bilgi", "Lütfen girdi dosyasını ve çıktı dosyasını seçin.")
+        # Eksik bilgi varsa, hatayı loga yaz ve durdur
+        log_error_and_retry("Eksik Bilgi: Lütfen girdi dosyasını ve çıktı dosyasını seçin.")
 
 def stop_translation_process():
     global stop_translation
     stop_translation = True
-    continue_button.config(state=tk.NORMAL)  # Devam Et butonunu etkinleştir
+    continue_button.config(state=tk.NORMAL)
 
 def continue_translation_process():
-    run_translation()  # Çeviri işlemini yeniden başlat
+    run_translation()
 
 def select_input_file():
     file_path = filedialog.askopenfilename(title="Girdi Dosyasını Seç", filetypes=(("Text Files", "*.txt"),))
@@ -116,19 +113,14 @@ def select_output_file():
     if file_path:
         output_file_path.set(file_path)
 
-# Ana pencere
 root = tk.Tk()
 root.title("Çeviri Programı")
-root.geometry("600x500")  # Pencere boyutunu belirle
-
-# Arka plan rengini ayarla
+root.geometry("600x500")
 root.configure(bg='#282828')
 
-# Dosya yollarını saklayan değişkenler
 input_file_path = tk.StringVar()
 output_file_path = tk.StringVar()
 
-# Arayüz elemanları
 input_label = tk.Label(root, text="Girdi Dosyası:", bg='#282828', fg='white')
 input_label.pack(pady=5)
 input_entry = tk.Entry(root, textvariable=input_file_path, width=50)
@@ -152,18 +144,14 @@ stop_button.pack(pady=20)
 continue_button = tk.Button(root, text="Devam Et", command=continue_translation_process, state=tk.DISABLED, bg='blue', fg='white')
 continue_button.pack(pady=20)
 
-# İlerleme çubuğu
 progress_var = tk.DoubleVar()
 progress_bar = ttk.Progressbar(root, length=400, variable=progress_var, maximum=100)
 progress_bar.pack(pady=10)
 
-# Sayaç etiketi
 count_label = tk.Label(root, text="İşlenen Kelime Sayısı: 0 / 0 (Geçmiş: 0)", bg='#282828', fg='white')
 count_label.pack(pady=5)
 
-# Geçen süre ve tahmini kalan süre etiketi
 time_label = tk.Label(root, text="Geçen Süre: 0 saat 0 dakika 0 saniye | Tahmini Kalan Süre: 0 saat 0 dakika 0 saniye", bg='#282828', fg='white')
 time_label.pack(pady=5)
 
-# Pencereyi çalıştır
 root.mainloop()
