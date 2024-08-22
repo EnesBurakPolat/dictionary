@@ -6,8 +6,8 @@ import time
 import threading
 import os
 
-#pip install googletrans==4.0.0-rc1
-#python -m PyInstaller --onefile --noconsole eng_to_tr_Auto.py
+# pip install googletrans==4.0.0-rc1
+# python -m PyInstaller --onefile --noconsole eng_to_tr_Auto.py
 
 def format_time(seconds):
     hours = int(seconds // 3600)
@@ -23,15 +23,13 @@ def read_translated_words(output_file):
     return set()
 
 def show_error_and_stop(error_message):
-    # Hata mesajını göster
+    # Hata mesajını göster ve 3 saniye sonra kapat
     messagebox.showerror("Hata", error_message)
-    root.update()  # Pencereyi güncelle
-
-    # 3 saniye bekle
-    time.sleep(3)
+    root.after(3000, lambda: root.quit())  # Hata kutusunu 3 saniye sonra kapat
 
     # Çeviri işlemini durdur ve otomatik olarak durdur butonuna bas
-    stop_translation_process()
+    root.after(3000, stop_translation_process)
+    root.after(4000, continue_translation_process)  # 1 saniye sonra devam ettir
 
 def translate_file(input_file, output_file, target_language='tr'):
     translator = Translator()
