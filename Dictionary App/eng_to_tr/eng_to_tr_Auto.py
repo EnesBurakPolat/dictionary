@@ -54,6 +54,9 @@ def translate_file(input_file, output_file, target_language='tr'):
                     try:
                         translation = translator.translate(word, dest=target_language).text
                         outfile.write(f"{word.replace(' ', '_')}={translation.replace(' ', '_')}\n")
+                    except IndexError:
+                        # Hatalı kelimeyi index_error olarak işaretleyin
+                        outfile.write(f"{word.replace(' ', '_')}=list_index_out_of_range\n")
                     except Exception as e:
                         log_error_and_retry(f"Bir hata oluştu: {e}")
                         return
