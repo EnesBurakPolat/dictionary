@@ -9,7 +9,7 @@
 
 using namespace std;
 
-//Derleme = g++ -o dictionary.exe dictionary.cpp -mwindows
+//Derleme = g++ -o dictionary.exe dictionary.cpp -mwindows -static
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
