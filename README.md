@@ -1,5 +1,5 @@
 # dictionary
 
-![dictionary_ss](https://github.com/user-attachments/assets/afc2ae75-ea8d-4388-a000-ef75121e0aca)
+![ssCapture](https://github.com/user-attachments/assets/b4167816-d591-4385-90b7-24360f3f71d3)
 
 ![eng_to_tr_ss](https://github.com/user-attachments/assets/286617e4-3ed4-4ced-9fe2-4d9e2e84eb08)
