@@ -10,4 +10,3 @@ dictionary
 - **Çift Yönlü Çeviri**: Uygulama, hem Türkçe'den İngilizce'ye hem de İngilizce'den Türkçe'ye çeviri yapabilir.
 - **Birden Fazla Anlam Desteği**: Aynı kelime için birden fazla çeviri sunar ve bunları virgülle ayrılmış olarak gösterir.
 - **Dosya Tabanlı Veri Kaynağı**: Kelime çevirileri bir dosyadan okunur ve programda işlenir.
-- 
