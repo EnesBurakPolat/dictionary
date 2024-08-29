@@ -4,7 +4,8 @@
 
 ![eng_to_tr_ss](https://github.com/user-attachments/assets/286617e4-3ed4-4ced-9fe2-4d9e2e84eb08)
 
-Bu proje, bir kelime çevirisi uygulamasıdır. Kullanıcı, bir kelimeyi girerek farklı dillerdeki karşılıklarını bulabilir. Proje, Türkçe ve İngilizce dilleri arasında çeviri yapmayı hedeflemektedir.
+dictionary
+
 ## Özellikler
 - **Çift Yönlü Çeviri**: Uygulama, hem Türkçe'den İngilizce'ye hem de İngilizce'den Türkçe'ye çeviri yapabilir.
 - **Birden Fazla Anlam Desteği**: Aynı kelime için birden fazla çeviri sunar ve bunları virgülle ayrılmış olarak gösterir.
