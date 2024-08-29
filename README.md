@@ -11,19 +11,6 @@ Bu proje, bir dil çevirisi uygulamasıdır. Kullanıcı, bir kelimeyi girerek f
 - **Dosya Tabanlı Veri Kaynağı**: Kelime çevirileri bir dosyadan okunur ve programda işlenir.
 ## Kullanım
 
-1. Projeyi klonlayın:
-    ```bash
-
-    ```
-2. Proje dizinine gidin:
-    ```bash
-
-    ```
-3. Uygulamayı derleyin ve çalıştırın:
-    ```bash
-
-    ```
-
 ## Gereksinimler
 
 ## Katkıda Bulunma
